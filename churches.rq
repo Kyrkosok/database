@@ -1,0 +1,34 @@
+#
+# Generator Query
+#
+# This query currently returns dublicate items 
+# where a property have multiply values, Some 
+# SparQL ninja could probebly fix that 
+# with SAMPLE or CONCAT/REPLACE magic
+#
+SELECT DISTINCT ?item ?itemLabel ?location ?article ?kulturarvsdata WHERE {
+  # get all instance of church
+  ?item wdt:P31 wd:Q16970 .
+  # with country set to Sweden
+  ?item wdt:P17 wd:Q34 .
+  # which has a kulturarvsdata URI set
+  ?item wdt:P1260 ?kulturarvsdata .
+  # ...a coordinate location
+  ?item wdt:P625 ?location .
+
+  # and a sv.wikipedia article
+  ?article schema:about ?item .
+  ?article schema:inLanguage "sv" .
+  ?article schema:isPartOf <https://sv.wikipedia.org/> .
+
+  # if available retrieve Commons Category(for query.wikidat.org only!)
+  # the pywikibot SparQL generator currently breaks when including OPTIONAL statements
+  #OPTIONAL {
+  #  ?item wdt:P373 ?commonsCategory .
+  #}
+
+  # label it or the world turns into hell
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "sv" . 
+  }
+}
