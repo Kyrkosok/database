@@ -1,6 +1,6 @@
-# Kyrkosok.se Database
+# Kyrksok.se Database
 
-This application creates the database for the Kyrkosok.se API backend.
+This application creates the database for the Kyrksok.se API backend.
 
 ## Requirements
 
