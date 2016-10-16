@@ -27,6 +27,10 @@ SELECT DISTINCT ?item ?itemLabel ?location ?article ?kulturarvsdata WHERE {
   #  ?item wdt:P373 ?commonsCategory .
   #}
 
+  #OPTIONAL {
+  #  ?item wdt:P18 ?image .
+  #}
+
   # label it or the world turns into hell
   SERVICE wikibase:label {
     bd:serviceParam wikibase:language "sv" . 

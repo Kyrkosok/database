@@ -7,5 +7,8 @@ CREATE TABLE `churches` (
   `lon` REAL,
   `wikipedia` TEXT,
   `wp_description` TEXT,
-  `commons` TEXT
+  `commons` TEXT,
+  `image` TEXT,
+  `image_thumbnail` TEXT,
+  `image_original` TEXT
 )

@@ -43,7 +43,7 @@ class Database:
             # get the raw wikidata uri without Q
             data['wikidata'] = re.sub(r'(?!\d).', '', str(i))
             
-            # make sure tthe item does not exist in our database
+            # make sure the item does not exist in our database
             if not self.primary_key_exists(data['wikidata']):
                 # parse the kulturarvsdata uri or set to false if invalid
                 data['kulturarvsdata'] = soch.formatUri(item['claims']['P1260'][0].getTarget(), 'raw', True)
@@ -51,10 +51,16 @@ class Database:
                 if data['kulturarvsdata']:
                     # fetch stuff from the wikidata item
                     data['wikipedia'] = item['sitelinks']['svwiki']
+
                     try:
                         data['commons'] = item['claims']['P373'][0].getTarget()
                     except(KeyError):
                         data['commons'] = ''
+
+                    try:
+                        data['image'] = re.sub(r'\]\]', '', re.sub(r'\[\[commons:', '', str(item['claims']['P18'][0].getTarget())))
+                    except(KeyError):
+                        data['image'] = ''
 
                     coord_pair = item['claims']['P625'][0].getTarget()
                     data['lat'] = coord_pair.lat
@@ -88,6 +94,21 @@ class Database:
                     except(KeyError):
                         data['wp_description'] = ''
                     
+                    try:
+                        if (data['image'] != ''):
+                            r = requests.get('https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail|name|original&titles=File:' + data['image'])
+                            result = r.json()
+                            
+                            for key in result['query']['pages']:
+                                data['image_thumbnail'] = result['query']['pages'][key]['thumbnail']['source']
+                                data['image_original'] = result['query']['pages'][key]['thumbnail']['original']
+                        else:
+                            data['image_thumbnail'] = ''
+                            data['image_original'] = ''
+                    except(KeyError):
+                        data['image_thumbnail'] = ''
+                        data['image_original'] = ''
+                    
                     # write and commit church to db
                     self.c.execute('''INSERT INTO `churches` (
                                         `wikidata`,
@@ -98,8 +119,11 @@ class Database:
                                         `lon`,
                                         `wikipedia`,
                                         `wp_description`,
-                                        `commons`
-                                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                                        `commons`,
+                                        `image`,
+                                        `image_thumbnail`,
+                                        `image_original`
+                                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                                   (data['wikidata'],
                                    data['label'],
                                    data['kulturarvsdata'],
@@ -108,7 +132,10 @@ class Database:
                                    data['lon'],
                                    data['wikipedia'],
                                    data['wp_description'],
-                                   data['commons']))
+                                   data['commons'],
+                                   data['image'],
+                                   data['image_thumbnail'],
+                                   data['image_original']))
                     self.db_connection.commit()
 
     def primary_key_exists(self, key):
