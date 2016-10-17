@@ -96,7 +96,7 @@ class Database:
                     
                     try:
                         if (data['image'] != ''):
-                            r = requests.get('https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail|name|original&titles=File:' + data['image'])
+                            r = requests.get('https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail|name|original&pithumbsize=110&titles=File:' + data['image'])
                             result = r.json()
                             
                             for key in result['query']['pages']:
