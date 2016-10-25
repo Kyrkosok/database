@@ -7,8 +7,9 @@
 # with SAMPLE or CONCAT/REPLACE magic
 #
 SELECT DISTINCT ?item ?itemLabel ?location ?article ?kulturarvsdata WHERE {
-  # get all instance of church
-  ?item wdt:P31 wd:Q16970 .
+  # get all instance of subclass of church
+  ?item wdt:P31 ?churchsub .
+  ?churchsub wdt:279* wd:Q16970 .
   # with country set to Sweden
   ?item wdt:P17 wd:Q34 .
   # which has a kulturarvsdata URI set
