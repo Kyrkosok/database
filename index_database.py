@@ -1,5 +1,5 @@
 #!/usr/bin/env
-import pywikibot, sqlite3, re, sys, requests, time
+import pywikibot, sqlite3, re, sys, requests, time, os
 from pywikibot import pagegenerators
 from ksamsok import KSamsok
 
@@ -12,6 +12,13 @@ class Database:
 
         with open('create_table.sql', 'r') as sql_table_file:
             self.table_sql = sql_table_file.read()
+
+        # remove existing database
+        try:
+            os.remove('db.sqlite')
+        except OSError as e:
+            if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
+                raise # re-raise exception if a different error occured
 
         # create and connect to db
         self.db_connection = sqlite3.connect('db.sqlite')
